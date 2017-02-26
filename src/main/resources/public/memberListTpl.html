@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .table { border-collapse:collapse; }
+        .table th, .table td { border:1px solid black; }
+    </style>
+</head>
+<body>
+<h1>회원목록</h1>
+<form action="/memberUpdate" method="post">
+    <table class="table">
+        <thead>
+        <tr>
+            <td>순번</td>
+            <td>아이디</td>
+            <td>비밀번호</td>
+            <td>이름</td>
+            <td>폰</td>
+            <td>성별</td>
+        </tr>
+        </thead>
+        <tbody id="rowData"></tbody>
+    </table>
+</form>
+
+<a href="/memberJoinTpl.html">저장</a>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js" ></script>
+<script src="http://malsup.github.com/jquery.form.js"></script>
+<script>
+    $(function()
+    {
+
+        function getList()
+        {
+            $.ajax(
+                {
+                    url: "/memberList",
+                    context: document.body
+                }).done(function(d)
+            {
+                dataLoad(d);
+            });
+        }
+
+        getList();
+
+        $(document).on("click", "#rowData input", function (e)
+        {
+            e.stopPropagation();
+        });
+
+        $(document).on("click", "#rowData tr", function()
+        {
+
+            removeAllModifyButton();
+
+            var id = -1;
+
+            $(this).find("td").each(function(i, item)
+            {
+                console.log(i + " : " + $(item).html());
+                if (i == 0)
+                {
+                    id = $(item).html();
+                }
+
+            });
+
+
+            var htmlTag = $(this).html();
+            htmlTag += "<td>"
+            htmlTag += "순번 : <input type ='text' name='id' value="+ id +" readonly>";
+            htmlTag += "<br/>"
+            htmlTag += "아이디 : <input type='text' name='userId'>";
+            htmlTag += "<br/>"
+            htmlTag += "비밀번호 : <input type='text' name='userpassword'>";
+            htmlTag += "<br/>"
+            htmlTag += "이름 : <input type='text' name='username'>";
+            htmlTag += "<br/>"
+            htmlTag += "폰 : <input type='text' name='userphone'>";
+            htmlTag += "<br/>"
+            htmlTag += "성별 : <input type='text' name='gender'>";
+            htmlTag += "<br/>"
+            htmlTag += "<input type='button' id='modify' value='수정'/>";
+            htmlTag += "<input type='button' id='cancel' value='취소'/>";
+            htmlTag += "<input type='button' id='delete' value='삭제'/>";
+            htmlTag += "</td>"
+            console.log(htmlTag);
+            $(this).html(htmlTag);
+
+//                $(this).find('td:first input').value = id;
+        });
+
+        $(document).on("click", "#modify",(function (e)
+        {
+            e.stopPropagation();
+            var result = confirm('수정하시겠습니까?');
+
+            if (result)
+            {
+                //초기화
+                $("#rowData").find("tr").each(function (i, item)
+                {
+
+                    var inputs = $(item).find("input[type=text]");
+                    if (inputs.length > 0)
+                    {
+//                            var id = $(item).find("td:first").val();
+//                            console.log("id = " + id);
+
+                        inputs.each(function (i, item)
+                        {
+                            var str = "";
+                            str += $(item).attr('name');
+                            str += " ";
+                            str += $(item).val();
+                            console.log(str);
+                        });
+
+//                            $('form').submit();
+                        $.ajax(
+                            {
+                                url: "/memberUpdate",
+                                type: 'post',
+                                data : $("form").serialize(),
+                                context: document.body
+                            }).done(function(d)
+                        {
+                            console.log(d);
+                            var returnValue = d.code;
+
+                            if (returnValue == true)
+                            {
+                                alert("Update Success!");
+                                getList();
+                            }
+                            else if (returnValue == false)
+                            {
+                                alert("Update Fail!");
+                            }
+                        });
+
+
+                    }
+                });
+                removeAllModifyButton();
+            }
+            else
+            {
+
+            }
+
+            console.log("modify click");
+        }));
+
+        $(document).on("click", "#cancel", (function (e)
+        {
+            console.log("cancel click");
+            e.stopPropagation();
+            var result = confirm('취소하시겠습니까?');
+
+            if (result)
+            {
+                removeAllModifyButton();
+            }
+            else
+            {
+
+            }
+
+        }));
+
+        $(document).on("click", "#delete"), (function (e)
+        {
+            console.log("delete click");
+            e.stopPropagation();
+            var result = confirm('삭제하시겠습니까?');
+
+            if (result)
+            {
+                var inputs = $(item).find("input[type=text]");
+                if (inputs.length > 0)
+                {
+                    removeAllModifyButton();
+
+//                    inputs.each(function (i, item)
+//                    {
+//                        var str = "";
+//                        str += $(item).attr('name');
+//                        str += " ";
+//                        str += $(item).val();
+//                        console.log(str);
+//                    });
+
+//                    $.ajax(
+//                        {
+//                            url: "/memberDelete/${}",
+//                            type: 'post',
+//                            data : $("form").serialize(),
+//                            context: document.body
+//                        }).done(function(d)
+//                    {
+//                        console.log(d);
+//                        var returnValue = d.code;
+//
+//                        if (returnValue == true)
+//                        {
+//                            alert("Update Success!");
+//                            getList();
+//                        }
+//                        else if (returnValue == false)
+//                        {
+//                            alert("Update Fail!");
+//                        }
+//                    });
+                }
+            }
+        });
+
+        function removeAllModifyButton()
+        {
+            //초기화
+            $("#rowData").find("tr").each(function (i, item)
+            {
+                if ($(item).find("input").length > 0)
+                {
+                    console.log("remove : " + i);
+                    $(item).find("td:last").remove();
+                }
+            });
+        }
+
+        function dataLoad(d)
+        {
+            var list = d.mList;
+            var htmlTag = "";
+            var i=1;
+            for (var j=0; j<list.length; j++)
+            {
+                htmlTag += "<tr>";
+                htmlTag += "<td>" + list[j].id + "</td>";
+                htmlTag += "<td>" + list[j].userId + "</td>";
+                htmlTag += "<td>" + list[j].userpassword + "</td>";
+                htmlTag += "<td>" + list[j].username + "</td>";
+                htmlTag += "<td>" + list[j].userphone + "</td>";
+                console.log(list[j].gender);
+                if (list[j].gender == 1)
+                {
+                    htmlTag += "<td>" + "남자" + "</td>";
+                }
+                else
+                {
+                    htmlTag += "<td>" + "여자" + "</td>";
+                }
+                htmlTag += "</tr>";
+                i++;
+            }
+            $("#rowData").html(htmlTag);
+        }
+    });
+</script>
+</body>
+</html>

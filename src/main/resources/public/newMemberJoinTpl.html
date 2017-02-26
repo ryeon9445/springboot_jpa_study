@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>newMember JOIN</title>
+</head>
+<body>
+<form action="/newMemberJoin" method="post">
+    <table>
+        <tr>
+            <td><input type="hidden" name="id"></td>
+        </tr>
+        <tr>
+            <td>아이디 </td>
+            <td><input type="text" name="userId"></td>
+        </tr>
+        <tr>
+            <td>비밀번호 </td>
+            <td><input type="password" name="userPassWd"></td>
+        </tr>
+        <tr>
+            <td>유저이름 </td>
+            <td><input type="text" name="userName"></td>
+        </tr>
+        <tr>
+            <td>유저폰넘버 </td>
+            <td><input type="text" name="userPhone"></td>
+        </tr>
+        <tr>
+            <td>주소 </td>
+            <td><input type="text" name="userAddr"></td>
+        </tr>
+
+        <tr>
+            <td><button type="button" id="btnSave">저장</button></td>
+            <td><button type="button" id="btnCancel">취소</button></td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+<script>
+
+    initData();
+
+    function initData()
+    {
+        var data = parseURLParams(document.location.search);
+
+        if(data == undefined)
+        {
+            return;
+        }
+
+        console.log("initData : " + data.id);
+
+
+        $("input[name='id']").val(data.id);
+        $("input[name='userId']").val(data.userId);
+        $("input[name='userPassWd']").val(data.userPassWd);
+        $("input[name='userName']").val(data.userName);
+        $("input[name='userPhone']").val(data.userPhone);
+        $("input[name='userAddr']").val(data.userAddr);
+    }
+
+    function parseURLParams(url) {
+        var queryStart = url.indexOf("?") + 1,
+            queryEnd   = url.indexOf("#") + 1 || url.length + 1,
+            query = url.slice(queryStart, queryEnd - 1),
+            pairs = query.replace(/\+/g, " ").split("&"),
+            parms = {}, i, n, v, nv;
+
+        if (query === url || query === "") return;
+
+        for (i = 0; i < pairs.length; i++) {
+            nv = pairs[i].split("=", 2);
+            n = decodeURIComponent(nv[0]);
+            v = decodeURIComponent(nv[1]);
+
+            if (!parms.hasOwnProperty(n)) parms[n] = [];
+            parms[n].push(nv.length === 2 ? v : null);
+        }
+        return parms;
+    }
+
+    $("#btnSave").click(function()
+    {
+        memberJoin();
+    });
+
+    $("#btnCancel").click(function()
+    {
+        memberClear();
+    });
+
+    function memberJoin()
+    {
+        $("form").submit();
+    }
+
+    function memberClear()
+    {
+        $("input").val("");
+    }
+
+</script>
+
+</body>
+</html>

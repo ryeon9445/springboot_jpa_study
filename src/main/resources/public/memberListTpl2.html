@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>member List</title>
+    <style>
+        table {
+            width: 1200px;
+        }
+        table tr td {
+            border: 1px solid black;
+            text-align: center;
+        }
+        #searchBox {
+            display: inline;
+        }
+        #searchParentBox {
+            margin-bottom: 10px;
+        }
+        #alginBox {
+            width: 100%;
+            height: 10px;
+            margin-bottom: 20px;
+        }
+        #left {
+            display: inline;
+        }
+        #right {
+            display: inline;
+            float: right;
+        }
+
+        .addValue
+        {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>회원 목록</h1>
+    <form action="/memberSearch">
+
+
+        <div id="searchParentBox">
+            <div id="searchBox">
+                <Label>검색
+                    <select name="selectSearch" id="selectSearch">
+                    <option value="99">전체</option>
+                    <option value="99">이름</option>
+                    <option value="99">아이디</option>
+                    <option value="99">주소</option>
+                </select>
+                </Label>
+                <Label>순번<input type="checkbox"></Label>
+                <Label>전화번호<input type="checkbox"></Label>
+                <Label>주소<input type="checkbox"></Label>
+
+                <input type="date" name="dateStartDate" id="dateStartDate"> ~
+                <input type="date" name="dateEndDate" id="dateEndDate">
+
+                <input type="text" name="txtSearch" id="txtSearch">
+                <input type="button" name="btnSearch" id="btnSearch" value="검색" onclick="fnBtnSearch();">
+                <input type="button" name="btnAdd" id="btnAdd" value="추가" onclick="fnBtnAdd();">
+                <input type="button" name="btnDetail" id="btnDetail" value="상세" onclick="fnBtnDetail();">
+                <input type="button" name="btnDelete" id="btnDelete" value="삭제" onclick="fnBtnDelete();">
+                <input type="button" name="btnRefresh" id="btnRefresh" value="다시로딩" onclick="fnBtnRefresh();">
+            </div>
+        </div>
+
+        <input type="text" class="addValue"/>
+        <input type="text" class="addValue"/>
+        <input type="text" class="addValue"/>
+        <input type="text" class="addValue"/>
+        <input type="text" class="addValue"/>
+        <input type="text" class="addValue"/>
+
+        <hr>
+
+        <div id="alginBox">
+            <!--<div id="left">-->
+                <!--<input type="text" value="검색조건을 입력하시요.">-->
+            <!--</div>-->
+            <div id="right">
+                <label for="">페이지</label>
+                <select name="" id="">
+                    <option value="">10</option>
+                    <option value="">20</option>
+                    <option value="">30</option>
+                </select>
+                <label for="">정렬</label>
+                <select name="" id="">
+                    <option value="">아이디</option>
+                    <option value="">비밀번호</option>
+                    <option value="">이름</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <colgroup>
+                <col width="3%">
+                <col width="10%">
+                <col width="13%">
+                <col width="15%">
+                <col width="15%">
+                <col width="15%">
+                <col width="*">
+            </colgroup>
+            <thead>
+            <tr>
+                <td><input type="checkbox" name="chkAll" onclick="fnCheckAll()"></td>
+                <td>순번</td>
+                <td>아이디</td>
+                <td>비밀번호</td>
+                <td>이름</td>
+                <td>폰</td>
+                <td>주소</td>
+            </tr>
+            </thead>
+            <tbody id="rowData">
+            </tbody>
+        </table>
+
+        <a href="/memberJoinTpl.html">저장화면 이동</a>
+        <a href="/memberJoinTpl.html">상세화면 이동</a>
+
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+
+    <script>
+
+        var todayDate = new Date();
+
+        memberList();
+
+        // 검색 처리
+        function searchProc() {
+            console.log(`${todayDate} :: searchProc call`);
+        }
+
+        // input 리셋
+        function inputReset() {
+            console.log(`${todayDate} :: inputReset call`);
+        }
+
+        // select 목록 초기화
+        function selectListInit() {
+            console.log(`${todayDate} :: selectListInit call`);
+        }
+
+        function alertDetail() {
+            alert("상세화면 입니다. ");
+        }
+
+        function fnBtnRefresh() {
+            location.reload();
+        }
+
+        function fnBtnSearch() {
+            var txtSearch = document.querySelector("#txtSearch").value;
+            alert(`${txtSearch}`);
+        }
+
+        function fnCheckAll()
+        {
+            alert("전체선택");
+        }
+
+        function fnBtnAdd()
+        {
+            var btnAdd = $("#btnAdd");
+            if(btnAdd.val() == "추가")
+            {
+                btnAdd.val("수정");
+                $(".addValue").show();
+            }
+            else
+            {
+                btnAdd.val("추가");
+                //$(".addValue").h
+            }
+        }
+
+        function fnBtnDetail() {alert("상세");}
+        function fnBtnDelete() {alert("삭제");}
+
+        function memberList() {
+
+            console.log(`${todayDate} :: memberList call`);
+            var list = [
+                {
+                    userId: "kyy82",
+                    userPassWd: "1234",
+                    userName: "kimyongyeon",
+                    userPhone: "010-1234-1234",
+                    userAddr: "삼각지역 등대",
+                }
+            ];
+            var htmlTag = "";
+            var i = 1;
+            for(var j=0; j<list.length; j++) {
+                htmlTag += "<tr>";
+                htmlTag += "<td><input type=checkbox name=chk></td>";
+                htmlTag += `<td>${i}</td>`;
+                htmlTag += `<td><a href="javascript:alertDetail();">${list[j].userId}</a></td>`;
+                htmlTag += `<td>${list[j].userPassWd}</td>`;
+                htmlTag += `<td>${list[j].userName}</td>`;
+                htmlTag += `<td>${list[j].userPhone}</td>`;
+                htmlTag += `<td>${list[j].userAddr}</td>`;
+                htmlTag += "</tr>";
+                i++;
+            }
+            document.querySelector("#rowData").innerHTML = htmlTag;
+
+//            $.ajax({
+//                url: "/memberList",
+//                context: document.body
+//            }).done(function(d) {
+//                var list = d.mList;
+//                var htmlTag = "";
+//                var i=1;
+//                for(var j=0; j<list.length; j++) {
+//                    htmlTag += "<tr>";
+//                    htmlTag += "<td><input type=checkbox name=chk></td>";
+//                    htmlTag += "<td>" + i + "</td>";
+//                    htmlTag += "<td>" + list[j].userId + "</td>";
+//                    htmlTag += "<td>" + list[j].userPassWd + "</td>";
+//                    htmlTag += "<td>" + list[j].userName + "</td>";
+//                    htmlTag += "<td>" + list[j].userPhone + "</td>";
+//                    htmlTag += "<td>" + list[j].userPhone + "</td>";
+//                    htmlTag += "</tr>";
+//                    i++;
+//                }
+//                $("#rowData").html(htmlTag);
+//            });
+        }
+    </script>
+</body>
+
+</html>

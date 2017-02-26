@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>member List</title>
+    <style>
+        table {
+            width: 1200px;
+        }
+        table tr td
+        {
+            border: 1px solid black;
+            text-align: center;
+        }
+        #searchBox
+        {
+            display: inline;
+        }
+        #searchParentBox
+        {
+            margin-bottom: 10px;
+        }
+        #alignBox
+        {
+            width: 100%;
+            height: 10px;
+            margin-bottom: 20px;
+        }
+        #left
+        {
+            display: inline;
+        }
+        #right
+        {
+            display: inline;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <h1>회원 목록</h1>
+    <form action="/memberSearch">
+        <div id="searchParentBox">
+             <div id="searchBox">
+                 <Label>
+                     <select name="selectSearch" id="selectSearch">
+                         <!--<option value="all">전체</option>-->
+                         <option value="userName">이름</option>
+                         <option value="userId">아이디</option>
+                         <option value="userAddr">주소</option>
+                         <option value="createdDate">날짜</option>
+                     </select>
+                 </Label>
+                 <Label>순번<input type="checkbox"></Label>
+                 <Label>전화번호<input type="chkecbox"></Label>
+                 <Label>주소<input type="checkbox"></Label>
+
+                 <input type="date" name="dateStartDate" id="dateStartDate">
+                 <input type="date" name="dateEndDate" id="dateEndDate">
+
+                 <input type="text" name="btnSearch" id="txtSearch">
+                 <input type="button" name="dateEndDate" id="btnSearch" value="검색" onclick="fnBtnSearch();">
+                 <input type="button" name="dateAdd" id="btnAdd" value="추가" onclick="fnBtnAdd();">
+                 <input type="button" name="btnDetail" id="btnDetail" value="상세" onclick="fnBtnDetail();">
+                 <input type="button" name="btnDelete" id="btnDelete" value="삭제" onclick="fnBtnDelete();">
+                 <input type="button" name="btnRefresh" id="btnRefresh" value="다시로딩" onclick="fnBtnRefresh();">
+             </div>
+        </div>
+
+        <hr>
+
+        <div id="alginBox">
+            <div id="left">
+                <input type="text" value="검색조건을 입력하시오.">
+            </div>
+            <div id="right">
+                <label for="">페이지</label>
+                <select name="" id="">
+                    <option value="">10</option>
+                    <option value="">20</option>
+                    <option value="">30</option>
+                </select>
+                <label for="">정렬</label>
+                <select name="" id="">
+                    <option value="">아이디</option>
+                    <option value="">비밀번호</option>
+                    <option value="">이름</option>
+                </select>
+            </div>
+        </div>
+
+        <table>
+            <colgroup>
+                <col width="3%">
+                <col width="10%">
+                <col width="13%">
+                <col width="15%">
+                <col width="15%">
+                <col width="*">
+            </colgroup>
+            <thead>
+                <tr>
+                    <td><input type="checkbox" name="chkAll" onclick="fnCheckAll()"></td>
+                    <td>순번</td>
+                    <td>아이디</td>
+                    <td>비밀번호</td>
+                    <td>이름</td>
+                    <td>폰</td>
+                    <td>주소</td>
+                </tr>
+            </thead>
+            <tbody id="rowData">
+            </tbody>
+        </table>
+
+        <a href="/newMemberJoinTpl.html">저장화면 이동</a>
+        <a href="javascript:fnBtnDetail()">상세화면 이동</a>
+
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+
+    <script>
+
+        var todayDate = new Date();
+
+        initData();
+
+        function searchProc()
+        {
+            console.log(`${todayDate} :: searchProc call`);
+        }
+
+        function inputReset()
+        {
+            console.log(`${todayDate} :: inputReset call`);
+        }
+
+        function selectListInit()
+        {
+            console.log(`${todayDate} :: selectListInit call`);
+        }
+
+        function alertDetail(id)
+        {
+            $("#rowData tr").each(function (i, item)
+            {
+                var checkId = $(item).find("td:eq(1)");
+                if (id == checkId.text())
+                {
+                    var value = "/newMemberJoinTpl.html?";
+                    //value += "userId=" + $(item).find("td:eq(1)").text();
+                    value += "id=" + $(item).find("td:eq(1)").text() + "&";
+                    value += "userId=" + $(item).find("td:eq(2)").text() + "&";
+                    value += "userPassWd=" + $(item).find("td:eq(3)").text() + "&";
+                    value += "userName=" + $(item).find("td:eq(4)").text() + "&";
+                    value += "userPhone=" + $(item).find("td:eq(5)").text() + "&";
+                    value += "userAddr=" + $(item).find("td:eq(6)").text();
+
+                    console.log(value);
+                    location.href = value;
+                }
+            });
+        }
+
+        function fnBtnSearch()
+        {
+            var searchType = $("#selectSearch option:selected").val();
+
+
+            var searchArray = new Array();
+            var searchValue = new Object();
+
+            if (searchType != "createdDate")
+            {
+                // 날짜가 아닐경우
+                var txtSearch = document.querySelector("#txtSearch").value;
+
+                searchValue[searchType] = txtSearch;
+                searchArray.push(searchValue);
+
+                alert(`${txtSearch} / ${searchType}`);
+            }
+            else
+            {
+                //날짜일경우
+                var dateStartSearch = document.querySelector("#dateStartDate").value;
+                var dateEndSearch = document.querySelector("#dateEndDate").value;
+
+                searchValue["dateStartDate"] = dateStartSearch + " 00:00:00";
+                searchValue["dateEndDate"] = dateEndSearch + " 23:59:59";
+                searchArray.push(searchValue);
+
+                alert(`${searchType} / ${dateStartSearch} / ${dateEndSearch}` );
+            }
+
+
+            var jsonArray = JSON.stringify(searchArray);
+            console.log(jsonArray);
+
+            searchData(jsonArray);
+        }
+
+        function fnBtnRefresh()
+        {
+            loadData();
+        }
+
+        function fnCheckAll()
+        {
+            alert("전체선택");
+        }
+
+        function fnBtnAdd()
+        {
+            //alert("추가");
+            location.href = "/newMemberJoinTpl.html";
+        }
+
+        function fnBtnDetail()
+        {
+            var isCheckedBox = 0;
+            $("#rowData tr").each(function (i, item)
+            {
+                var checkbox = $(item).find("input[type=checkbox]");
+                if (checkbox.is(":checked") == true)
+                {
+                    isCheckedBox++;
+                }
+            });
+
+            if (isCheckedBox != 1)
+            {
+                alert("체크박스 하나만 선택해주세요");
+                return;
+            }
+
+            $("#rowData tr").each(function (i, item)
+            {
+                var checkbox = $(item).find("input[type=checkbox]");
+
+                if (checkbox.is(":checked") == true)
+                {
+                    //id
+                    var id = $(item).find("td:eq(1)");
+
+                    var value = "/newMemberJoinTpl.html?";
+                    //value += "userId=" + $(item).find("td:eq(1)").text();
+                    value += "id=" + $(item).find("td:eq(1)").text() + "&";
+                    value += "userId=" + $(item).find("td:eq(2)").text() + "&";
+                    value += "userPassWd=" + $(item).find("td:eq(3)").text() + "&";
+                    value += "userName=" + $(item).find("td:eq(4)").text() + "&";
+                    value += "userPhone=" + $(item).find("td:eq(5)").text() + "&";
+                    value += "userAddr=" + $(item).find("td:eq(6)").text();
+
+                    console.log(value);
+                    location.href = value;
+                }
+            });
+        }
+
+        function fnBtnDelete()
+        {
+            var isCheckedBox = false;
+            $("#rowData tr").each(function (i, item)
+            {
+                var checkbox = $(item).find("input[type=checkbox]");
+                if (checkbox.is(":checked") == true)
+                {
+                    isCheckedBox = true;
+                }
+            });
+
+            if (isCheckedBox == false)
+            {
+                alert("체크박스를 선택해주세요");
+                return;
+            }
+
+            //삭제
+            var deleteArray = new Array();
+
+            $("#rowData tr").each(function (i, item)
+            {
+                var checkbox = $(item).find("input[type=checkbox]");
+
+                if (checkbox.is(":checked") == true)
+                {
+                    //id
+                    var id = $(item).find("td:eq(1)");
+
+
+                    var deleteMember = new Object();
+                    deleteMember.id = id.text();
+                    deleteArray.push(deleteMember);
+
+                    console.log(id.text() + " / " + checkbox.is(":checked"));
+                }
+            });
+
+            var jsonArray = JSON.stringify(deleteArray);
+            console.log(jsonArray);
+
+            deleteData(jsonArray);
+        }
+
+        function initData()
+        {
+            loadData();
+        }
+
+        function loadData()
+        {
+            $.ajax(
+                {
+                    url: "/newMemberList",
+                    context: document.body
+                }).done(function(list)
+            {
+                memberList(list);
+            });
+        }
+
+        function memberList(list)
+        {
+            var list = list.mList;
+            console.log(`${todayDate} :: memberList call`);
+
+            var htmlTag = "";
+            var i = 1;
+            for (var j=0; j<list.length; j++)
+            {
+                htmlTag += "<tr>";
+                htmlTag += "<td><input type=checkbox name=chk></td>";
+                htmlTag += `<td>${list[j].id}</td>`;
+                htmlTag += `<td><a href="javascript:alertDetail(${list[j].id});">${list[j].userId}</a></td>`;
+                htmlTag += `<td>${list[j].userPassWd}</td>`;
+                htmlTag += `<td>${list[j].userName}</td>`;
+                htmlTag += `<td>${list[j].userPhone}</td>`;
+                htmlTag += `<td>${list[j].userAddr}</td>`;
+                htmlTag += "</tr>";
+                i++;
+            }
+            document.querySelector("#rowData").innerHTML = htmlTag;
+
+        }
+
+        function deleteData(data)
+        {
+            $.ajax
+            ({
+                url : "/newMemberDelete",
+                datatype: 'json',
+                type : 'post',
+                data : data,
+                contentType : "application/json; charset=UTF-8",
+                success : function(data, stat, xhr)
+                {
+                    alert("success");
+                    loadData();
+                },
+                error : function(xhr, stat, err)
+                {
+                    alert("error");
+                    console.log(err);
+                }
+            });
+        }
+
+        function searchData(data)
+        {
+            $.ajax
+            ({
+                url : "/newMemberListByLike",
+                dataType: 'json',
+                type : 'post',
+                data : data,
+                contentType : "application/json; charset=UTF-8",
+                success : function(data, stat, xhr)
+                {
+                    alert("success");
+                    memberList(data);
+                },
+                error : function(xhr, stat, err)
+                {
+                    alert("error");
+                    console.log(err);
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
